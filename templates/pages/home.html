@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+welcome to twitr
+
+<div id='tweets'>
+</div>
+
+<script>
+    const tweetsElement = document.getElementById("tweets")
+    const xhr = new XMLHttpRequest()
+    const method = 'GET'
+    const url = "/tweets"
+    const responseType = "json"
+
+    var currentCount = 0
+    function handleLike(tweet_id, currentCount) {
+        currentCount++
+        console.log(tweet_id, currentCount)
+    }
+
+    function likeButton(tweet) {
+        return "<button class='btn btn-primary' onclick=handleLike(" + tweet.id + "," + tweet.likes + ")>Like</button>"
+    }
+
+    function formattedTwitElement(twit) {
+        var formattedTwit = "<div class='mb-4 tweet' id='tweet-" + twit.id + "'> <p>" + twit.content + "</p> <div class='btn-group'>" 
+            + likeButton(twit) + "</div> </div>"
+        return formattedTwit
+    }
+
+    xhr.responseType = responseType
+    xhr.open(method, url)
+    xhr.onload = function() {
+        const serverResponse = xhr.response
+        const listedItems = serverResponse.response
+        var finalTweetStr = ""
+        var index;
+        for (index = 0; index < listedItems.length; index++) {
+            var currentItem = formattedTwitElement(listedItems[index])
+            finalTweetStr += currentItem
+        }
+        tweetsElement.innerHTML = finalTweetStr
+    }
+    xhr.send()
+</script>
+
+{% endblock content %}
